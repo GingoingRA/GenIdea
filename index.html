@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gen Idea - AI-Powered Idea Leaderboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --black: #0a0a0a;
+            --white: #ffffff;
+            --violet: #c4b5fd;
+            --pink: #fbbfe4;
+            --yellow: #fef3c7;
+            --gradient: linear-gradient(135deg, var(--violet) 0%, var(--pink) 50%, var(--yellow) 100%);
+        }
+        
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient);
+            opacity: 0.05;
+            animation: gradientShift 15s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(10px, -10px) scale(1.05); }
+            66% { transform: translate(-10px, 10px) scale(0.95); }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            color: var(--violet);
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            color: var(--white);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--violet);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(196, 181, 253, 0.1);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        ::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        button {
+            background: var(--gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--black);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(196, 181, 253, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            animation: slideIn 0.4s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .status.info { background: rgba(196, 181, 253, 0.1); border-left: 4px solid var(--violet); }
+        .status.success { background: rgba(134, 239, 172, 0.1); border-left: 4px solid #86efac; }
+        .status.error { background: rgba(252, 165, 165, 0.1); border-left: 4px solid #fca5a5; }
+        
+        .leaderboard-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .rank-badge {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--gradient);
+            color: var(--black);
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            line-height: 50px;
+            text-align: center;
+            margin-right: 15px;
+            vertical-align: top;
+        }
+        
+        .rank-badge.gold { background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); }
+        .rank-badge.silver { background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%); }
+        .rank-badge.bronze { background: linear-gradient(135deg, #cd7f32 0%, #e89b5a 100%); }
+        
+        .idea-content {
+            display: inline-block;
+            width: calc(100% - 180px);
+            vertical-align: top;
+        }
+        
+        .idea-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .username {
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--violet);
+        }
+        
+        .score-display {
+            display: inline-block;
+            background: rgba(196, 181, 253, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--violet);
+            margin-left: 15px;
+        }
+        
+        .idea-text {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+        
+        .pending-badge {
+            display: inline-block;
+            background: rgba(251, 191, 228, 0.2);
+            color: var(--pink);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+        
+        .helper {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 8px;
+        }
+        
+        .char-count {
+            text-align: right;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        @media (max-width: 768px) {
+            .logo { font-size: 3rem; }
+            .rank-badge { width: 40px; height: 40px; line-height: 40px; font-size: 1.2rem; }
+            .idea-content { width: calc(100% - 140px); }
+        }
+        
+        .my-ideas-list {
+            margin-top: 20px;
+        }
+        
+        .my-idea-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .idea-info {
+            flex: 1;
+        }
+        
+        .idea-id {
+            color: var(--violet);
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        
+        .score-btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">GEN IDEA</div>
+            <div class="tagline">AI-Powered Idea Leaderboard on GenLayer</div>
+        </header>
+        
+        <div id="status-message"></div>
+        
+        <!-- Submit Section (auto-connects on load, no manual connection needed) -->
+        <div class="card" id="submit-section" style="display: none;">
+            <h2>💡 Submit Your Idea</h2>
+            
+            <div id="username-section">
+                <input type="text" id="username-input" placeholder="Your username (2-30 characters)">
+                <button onclick="setUsername()">Set Username</button>
+            </div>
+            
+            <div id="idea-section" style="display: none;">
+                <p class="helper">You can submit up to 3 ideas. Ideas remaining: <span id="ideas-remaining">3</span></p>
+                <textarea id="idea-input" placeholder="Describe your GenLayer project idea... (20-500 characters)"></textarea>
+                <div class="char-count"><span id="char-count">0</span> / 500 characters</div>
+                <button onclick="submitIdea()" id="submit-btn">Submit Idea</button>
+                
+                <div id="my-ideas-section" class="my-ideas-list" style="display: none;">
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">📝 My Ideas</h3>
+                    <div id="my-ideas-container"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Leaderboard Section -->
+        <div class="card">
+            <h2>🏆 Leaderboard</h2>
+            <button onclick="loadLeaderboard()" style="margin-bottom: 20px;">Refresh Leaderboard</button>
+            <div id="leaderboard-container">
+                <div class="empty-state">
+                    <div class="empty-state-icon">💭</div>
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="app.js"></script>
+</body>
+</html>

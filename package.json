@@ -1,0 +1,14 @@
+{
+  "name": "gen-idea",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "genlayer-js": "latest"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}
