@@ -6,7 +6,7 @@ let client;
 let userAccount;
 
 // CONTRACT ADDRESS - Your deployed contract
-const CONTRACT_ADDRESS = '0x62198b91FbC822A07e58ECE03AB88b17C568f688';
+const CONTRACT_ADDRESS = '0x3005f35FdFFF14A0d85A37EEe9c0be54aAF54448';
 
 // Wait for DOM to be fully loaded, then auto-connect
 window.addEventListener('DOMContentLoaded', async () => {
