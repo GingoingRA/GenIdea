@@ -4,13 +4,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npx vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "genlayer-js": "latest"
-  },
-  "devDependencies": {
+    "genlayer-js": "latest",
     "vite": "^7.3.1"
   }
 }
